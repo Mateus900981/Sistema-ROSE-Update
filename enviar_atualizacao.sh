@@ -1,51 +1,73 @@
 #!/bin/bash
 
 echo "============================================="
-echo "  🚀 ENVIANDO ATUALIZAÇÃO PARA O GITHUB 🚀  "
+echo "  🚀 ATUALIZAÇÃO 100% AUTOMÁTICA R.O.S.E. 🚀 "
 echo "============================================="
 echo ""
 
 # Garante que o terminal vai rodar dentro da pasta certa
 cd "$(dirname "$0")"
 
-# =======================================================
-# 🛡️ TRAVA DE PROTEÇÃO CONTRA ARQUIVOS GIGANTES
-# Ignora o ZIP e o Launcher para não travar o terminal!
-# =======================================================
+# 🛡️ Escudo para o Git Push não travar com arquivos grandes
 echo "Sistema_ROSE.zip" > .gitignore
 echo "Launcher_ROSE.AppImage" >> .gitignore
 
-# Pergunta qual é a nova versão para deixar o histórico bonitinho
-read -p "Digite a nova versão (ex: 1.0.3) ou aperte Enter para pular: " VERSAO
+# ==========================================
+# 1. ATUALIZAR O SISTEMA
+# ==========================================
+echo "--- ATUALIZAÇÃO DO SISTEMA ---"
+read -p "Digite a NOVA VERSÃO (ex: 1.0.5) ou Enter para pular: " VERSAO_SISTEMA
 
-# Se apertar Enter sem digitar nada, ele usa a data e hora atual
-if [ -z "$VERSAO" ]; then
-    MENSAGEM="Atualização do sistema - $(date +'%d/%m/%Y %H:%M')"
+if [ ! -z "$VERSAO_SISTEMA" ]; then
+    # ISSO AQUI FAZ A MÁGICA: Escreve a versão direto no arquivo txt!
+    echo "$VERSAO_SISTEMA" > versao.txt
+    echo "✅ Arquivo versao.txt atualizado sozinho para $VERSAO_SISTEMA!"
+fi
+echo ""
+
+# ==========================================
+# 2. ATUALIZAR O LAUNCHER
+# ==========================================
+echo "--- ATUALIZAÇÃO DO LAUNCHER ---"
+read -p "Digite a nova versão do LAUNCHER (ex: 1.0.4) ou Enter para pular: " VERSAO_LAUNCHER
+
+if [ ! -z "$VERSAO_LAUNCHER" ]; then
+    # ISSO AQUI FAZ A MÁGICA: Escreve a versão direto no arquivo txt do Launcher!
+    echo "$VERSAO_LAUNCHER" > versao_launcher.txt
+    echo "✅ Arquivo versao_launcher.txt atualizado sozinho para $VERSAO_LAUNCHER!"
+fi
+echo ""
+
+# ==========================================
+# 3. SALVAR E ENVIAR TUDO
+# ==========================================
+echo "📦 Salvando os textos (versões) localmente..."
+git add .
+git commit -m "Atualização de versão pelo script automático"
+
+echo "☁️  Enviando os textos para o GitHub..."
+git push
+
+# ==========================================
+# 4. CRIAR O RELEASE AUTOMÁTICO COM OS 125MB
+# ==========================================
+# O script cria uma tag baseada na versão do sistema ou na data atual
+if [ ! -z "$VERSAO_SISTEMA" ]; then
+    TAG="v$VERSAO_SISTEMA"
 else
-    MENSAGEM="Lançamento da versão $VERSAO"
+    TAG="v-$(date +'%Y%m%d%H%M')"
 fi
 
 echo ""
-echo "📦 Preparando arquivos novos..."
-git add .
+echo "🚀 UPLOAD TURBO INICIADO..."
+echo "Criando o Release e enviando o ZIP e o AppImage pesados direto pro GitHub!"
+echo "Isso pode demorar alguns minutos dependendo da sua internet..."
 
-echo "💾 Salvando o pacote localmente..."
-git commit -m "$MENSAGEM"
-
-echo "☁️  Enviando para a nuvem do GitHub (Apenas Textos)..."
-git push
+# O comando 'gh' que faz o serviço pesado por você
+gh release create "$TAG" Sistema_ROSE.zip Launcher_ROSE.AppImage --title "Atualização $TAG" --notes "Arquivos atualizados automaticamente pelo script."
 
 echo ""
 echo "============================================="
-echo " 🎉 ARQUIVOS ENVIADOS COM SUCESSO! 🎉      "
+echo " 🎉 TUDO PRONTO! ATUALIZAÇÃO NO AR! 🎉       "
 echo "============================================="
-echo " ⚠️  LEMBRETE MUITO IMPORTANTE:            "
-echo " Os arquivos Sistema_ROSE.zip e o         "
-echo " Launcher_ROSE.AppImage NÃO foram enviados"
-echo " por aqui para evitar lentidão e erros.   "
-echo ""
-echo " Vá na aba 'Releases' do seu GitHub e faça "
-echo " o upload manual dos DOIS arquivos lá!     "
-echo "============================================="
-echo ""
 read -p "Aperte ENTER para fechar..."
