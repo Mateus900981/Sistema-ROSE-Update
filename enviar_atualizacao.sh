@@ -9,8 +9,11 @@ echo ""
 cd "$(dirname "$0")"
 
 # 🛡️ Escudo para o Git Push não travar com arquivos grandes
-echo "Sistema_ROSE.zip" > .gitignore
+# MUDANÇA: Agora o escudo protege os novos nomes de Windows e Linux!
+echo "Sistema_ROSE_Linux.zip" > .gitignore
+echo "Sistema_ROSE_Win.zip" >> .gitignore
 echo "Launcher_ROSE.AppImage" >> .gitignore
+echo "Launcher_ROSE.exe" >> .gitignore
 
 # ==========================================
 # 1. ATUALIZAR O SISTEMA
@@ -49,7 +52,7 @@ echo "☁️  Enviando os textos para o GitHub..."
 git push
 
 # ==========================================
-# 4. CRIAR O RELEASE AUTOMÁTICO COM OS 125MB
+# 4. CRIAR O RELEASE AUTOMÁTICO COM OS ARQUIVOS PESADOS
 # ==========================================
 # O script cria uma tag baseada na versão do sistema ou na data atual
 if [ ! -z "$VERSAO_SISTEMA" ]; then
@@ -64,7 +67,8 @@ echo "Criando o Release e enviando o ZIP e o AppImage pesados direto pro GitHub!
 echo "Isso pode demorar alguns minutos dependendo da sua internet..."
 
 # O comando 'gh' que faz o serviço pesado por você
-gh release create "$TAG" Sistema_ROSE.zip Launcher_ROSE.AppImage --title "Atualização $TAG" --notes "Arquivos atualizados automaticamente pelo script."
+# MUDANÇA: Agora ele sobe o arquivo "Sistema_ROSE_Linux.zip"
+gh release create "$TAG" Sistema_ROSE_Linux.zip Launcher_ROSE.AppImage --title "Atualização $TAG" --notes "Arquivos atualizados automaticamente pelo script."
 
 echo ""
 echo "============================================="
